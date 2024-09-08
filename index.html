@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="AhmadR">
+    <link rel="icon" type="image/svg+xml" href="iconp.png"/>
+    <title>Bases-Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffd1dc;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Style untuk header */
+        header {
+            background-color: #d94f70;
+            color:#f4f4f4;
+            padding: 20px;
+            text-align: center;
+        }
+        header h1{
+            color:#f8c8dc;
+            font-size: 30px;
+        }
+        header p{
+            color:#fcdbe8;
+          
+        }
+
+        /* Style untuk footer */
+        footer {
+            background-color: #d94f70;
+            color:#fcdbe8 ;
+            padding: 10px 20px;
+            text-align: center;
+            position: relative;
+            bottom: 0;
+            width: 88%;
+            margin-top: 40px;
+        }
+
+        /* Style utama untuk konten */
+        .converter {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fc8eac;
+            box-shadow: 0 3px 15px #a94064;
+            padding: 20px;
+            border-radius: 26px;
+        }
+
+        h1 {
+            font-size: 29px;
+            color: #ffc1cc;
+        }
+
+        p {
+            font-size: 16px;
+            color: #f4f4f4;
+        }
+        
+      h3{
+        color: #8a3250;
+      }
+
+        .input-output {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .input-output div {
+            flex-basis: 100%;
+            margin-bottom: 20px;
+        }
+
+        input, select, button {
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #eaeaea;
+            border-radius: 7px;
+        }
+
+        button {
+            background-color: #a94064;
+            color: #eaeaea;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color:#ff007f ;
+        }
+
+        .btn-copy-paste {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .btn-copy-paste button {
+            width: 48%;
+        }
+
+        /* Styling khusus untuk layout HP */
+        @media (max-width: 768px) {
+            .input-output {
+                flex-direction: column;
+            }
+
+            .input-output div {
+                margin-bottom: 10px;
+            }
+
+            .btn-copy-paste button {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+        footer a{
+          color: #fcdbe8;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>Number & Text Bases Converter</h1>
+        <p>Convert Number And Text Here  To Make Your Life Easier And More Peacefull Even Happier Than Ever.Enjoy!</p>
+    </header>
+
+    <!-- Konten utama -->
+    <div class="converter">
+        <p>Masukkan angka atau huruf, lalu pilih tipe yang akan di konversi:</p>
+
+        <div class="input-output">
+            <div>
+                <h3>Input</h3>
+                <input type="text" id="inputData" placeholder="Enter a number or text" />
+                <select id="inputType">
+                    <option value="binary">Binary</option>
+                    <option value="octal">Octal</option>
+                    <option value="decimal">Decimal</option>
+                    <option value="hexadecimal">Hexadecimal</option>
+                    <option value="text">Text</option>
+                </select>
+            </div>
+
+            <button onclick="swapIO()">⇄ Swap</button>
+
+            <div>
+                <h3>Output</h3>
+                <input type="text" id="outputResult" readonly placeholder="Result" />
+                <select id="outputType">
+                    <option value="binary">Binary</option>
+                    <option value="octal">Octal</option>
+                    <option value="decimal">Decimal</option>
+                    <option value="hexadecimal">Hexadecimal</option>
+                    <option value="text">Text</option>
+                </select>
+            </div>
+        </div>
+
+        <button onclick="convert()">Convert</button>
+
+        <div class="btn-copy-paste">
+            <button onclick="copyText()">Copy Output</button>
+            <button onclick="pasteText()">Paste to Input</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>Got any bugs? Contact Developer</p>
+      <a href="https://ahmadr.vercel.app">AhmadR(Developer)</a>
+        <p>&copy; 2024 AhmadR's . All Rights Reserved.</p>
+    </footer>
+
+    <script>
+      function convert() {
+    const inputData = document.getElementById('inputData').value.trim();
+    const inputType = document.getElementById('inputType').value;
+    const outputType = document.getElementById('outputType').value;
+    let result = '';
+
+    if (inputData === '') {
+        result = 'Please enter a valid number or text!';
+    } else {
+        if (inputType === 'text') {
+            result = convertText(inputData, outputType);
+        } else if (outputType === 'text') {
+            result = convertToText(inputData, inputType);
+        } else {
+            const numberInDecimal = convertToDecimal(inputData, inputType);
+            if (isNaN(numberInDecimal)) {
+                result = 'Invalid input for conversion!';
+            } else {
+                result = convertFromDecimal(numberInDecimal, outputType);
+            }
+        }
+    }
+
+    document.getElementById('outputResult').value = result;
+}
+
+function isValidBinary(input) {
+    return /^[01]+$/.test(input); // Validasi input biner
+}
+
+function isValidOctal(input) {
+    return /^[0-7]+$/.test(input); // Validasi input oktal
+}
+
+function isValidDecimal(input) {
+    return /^[0-9]+$/.test(input); // Validasi input desimal
+}
+
+function isValidHexadecimal(input) {
+    return /^[0-9A-Fa-f]+$/.test(input); // Validasi input heksadesimal
+}
+
+function padBinary(input) {
+    const padLength = 4 - (input.length % 4);
+    if (padLength !== 4) {
+        return '0'.repeat(padLength) + input;
+    }
+    return input;
+}
+
+function convertToDecimal(input, type) {
+    switch (type) {
+        case 'binary':
+            if (!isValidBinary(input)) {
+                return NaN;
+            }
+            input = padBinary(input); // Padding biner jika perlu
+            return parseInt(input, 2);
+        case 'octal':
+            if (!isValidOctal(input)) {
+                return NaN;
+            }
+            return parseInt(input, 8);
+        case 'decimal':
+            if (!isValidDecimal(input)) {
+                return NaN;
+            }
+            return parseInt(input, 10);
+        case 'hexadecimal':
+            if (!isValidHexadecimal(input)) {
+                return NaN;
+            }
+            return parseInt(input, 16);
+        default:
+            return NaN;
+    }
+}
+
+function convertFromDecimal(number, type) {
+    if (isNaN(number)) {
+        return 'Invalid input!'; // Menangani hasil konversi NaN
+    }
+    switch (type) {
+        case 'binary':
+            return number.toString(2);
+        case 'octal':
+            return number.toString(8);
+        case 'decimal':
+            return number.toString(10);
+        case 'hexadecimal':
+            return number.toString(16).toUpperCase();
+        default:
+            return number;
+    }
+}
+
+function convertText(text, type) {
+    let result = '';
+    for (let i = 0; i < text.length; i++) {
+        let charCode = text.charCodeAt(i);
+        result += convertFromDecimal(charCode, type) + ' ';
+    }
+    return result.trim();
+}
+
+function convertToText(number, type) {
+    let chars = number.split(' ');
+    let result = '';
+    for (let i = 0; i < chars.length; i++) {
+        let charCode = convertToDecimal(chars[i], type);
+        if (isNaN(charCode)) {
+            return 'Invalid input for text conversion!';
+        }
+        result += String.fromCharCode(charCode);
+    }
+    return result;
+}
+
+function swapIO() {
+    const input = document.getElementById('inputData').value;
+    const output = document.getElementById('outputResult').value;
+    document.getElementById('inputData').value = output;
+    document.getElementById('outputResult').value = input;
+
+    const inputType = document.getElementById('inputType').value;
+    const outputType = document.getElementById('outputType').value;
+    document.getElementById('inputType').value = outputType;
+    document.getElementById('outputType').value = inputType;
+}
+
+function copyText() {
+    const output = document.getElementById('outputResult');
+    output.select();
+    document.execCommand('copy');
+}
+
+function pasteText() {
+    navigator.clipboard.readText().then(text => {
+        document.getElementById('inputData').value = text;
+    });
+}
+    </script>
+</body>
+</html>
